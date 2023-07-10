@@ -1,6 +1,16 @@
 # 42cursus-04-Born2BeRoot
 
-### Part I - Instalação da VM
+<p align="center">
+	<a href="#"><img src="https://game.42sp.org.br/static/assets/achievements/born2berootn.png"/></a>
+</p>
+
+<p align="center">
+	<a href="https://github.com/JaeSeoKim/badge42"><img src="https://badge42.vercel.app/api/v2/clgz3vp5u001608l5gzuhclek/project/3145425" alt="evportel's 42 Born2beroot Score" /></a>
+</p>
+
+<p align="center">
+	<strong>Part I - Instalação da VM</strong>
+</p>
 
 ```bash
 VM Machine
@@ -50,4 +60,34 @@ uncheck all items
 Yes -> /dev/sda (ata-VBOX...)
 # Finish the installation
 Continue
+```
+
+<p align="center">
+	<strong>Part II - Comandos e Configurações</strong>
+</p>
+
+Checando a estrutura de partições
+
+```bash
+lsblk
+```
+Com o Debian rodando… **Primeiramente instalar o sudo**
+
+```bash
+su - 
+apt-get update -y
+apt-get upgrade -y
+apt install sudo
+usermod -aG sudo everton 
+-- # getent group sudo para checar o grupo de usuário sudo
+sudo visudo
+-- # Encontre -> # User privilege specification
+-- # digite your_username  	ALL=(ALL:ALL) ALL e salve o arquivo
+everton  	ALL=(ALL) ALL
+```
+**Retorne para seu usuário**
+
+```bash
+su everton
+cd /home/everton
 ```
