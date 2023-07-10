@@ -96,7 +96,8 @@ cd /home/evportel
 ```bash
 sudo apt-get install aptitude -y
 sudo apt-get install git -y
-git --version # Para verificar a versão do Git
+-- # Para verificar a versão do Git
+git --version
 
 sudo apt install openssh-server -y
 sudo systemctl status ssh
@@ -141,7 +142,7 @@ sudo apt-get install net-tools
 
 -- # Reinicie a máquina virtual
 sudo reboot
--- # Pegue o IP da máquina virtual (inet 10.11.200.9) (netmask 255.255.0.0)
+-- # Pegue o IP da máquina virtual (inet 10.11.200.57) (netmask 255.255.0.0)
 ifconfig
 -- # e acesse user-name@ip-virtual-machine -p 4242
 ```
@@ -149,7 +150,7 @@ ifconfig
 
 ```bash
 -- # SSH user-name@ip-virtual-machine -p 4242
-ssh everton@10.11.200.22 -p 4242
+ssh everton@10.11.200.57 -p 4242
 -- # Para encerrar sua conexão SSH
 exit
 ```
@@ -270,19 +271,27 @@ Mas recomendo escrever e compreender cada comando \_(°-°)_/
 </aside>
 
 ```bash
-**sudo visudo**
+sudo visudo
 #-- Procure a linha ‘# Allow members of group sudo to execute any command'
 #-- username ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh 
 #-- Ficará assim:
-**# Allow members of group sudo to execute any command
+# Allow members of group sudo to execute any command
 %sudo   ALL=(ALL:ALL) ALL
-everton ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh**
+everton ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh
 ```
 
-```coq
+```bash
 sudo reboot
-sudo /usr/local/bin/monitoring # Para executar o script como su (SuperUsuário)
-sudo crontab -u root -e # Para abrir o crontab
-*/10 * * * *        /usr/local/bin/monitoring.sh #(insira isso no final do arquivo)
+-- # Para executar o script como su (SuperUsuário)
+sudo /usr/local/bin/monitoring
+-- # Para abrir o crontab
+sudo crontab -u root -e
+-- # (insira isso no final do arquivo)
+*/10 * * * *        /usr/local/bin/monitoring.sh
 ```
-*End Mandatory*
+
+**End Mandatory**
+
+[**Vai de bônus? Clique aqui**](/Vai%20de%20b%C3%B4nus.md)
+
+**Submissão e Avaliação**
