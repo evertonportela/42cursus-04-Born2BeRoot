@@ -172,3 +172,117 @@ sudo vim /etc/login.defs
 
 sudo reboot
 ```
+**Criando grupos de usuário**
+
+```bash
+sudo groupadd user42
+sudo groupadd evaluation
+-- # Para verificar se os grupos foram criados
+getent group
+```
+**Atribuindo usuários a grupos**
+
+```bash
+-- # Para verificar todos os usuários locais
+cut -d: -f1 /etc/passwd
+
+-- # Adicionar usuário 'evportel' ao grupo 'user42'
+sudo usermod -aG user42 evportel
+
+-- # Adicionar usuário ao grupo evaluation
+sudo usermod -aG evaluation evportel
+
+-- # Para verificar se o usuário está mesmo no grupo aplicado
+getent group user42
+getent group evaluation
+groups
+```
+**Criando sudo.log**
+
+```bash
+cd /var/log/
+-- # Caso não exista, crie a pasta sudo
+sudo mkdir sudo
+cd sudo
+sudo touch sudo.log
+```
+**Configurando o grupo sudoers**
+
+```bash
+sudo nano /etc/sudoers
+-- # Edite o arquivo com adicionando as seguintes configurações
+Defaults	env_reset
+Defaults	mail_badpass
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/bin:/sbin:/bin"
+Defaults	badpass_message="Password is wrong, please try again!"
+Defaults	passwd_tries=3
+Defaults	logfile="/var/log/sudo/sudo.log"
+Defaults	log_input, log_output
+Defaults	requiretty
+```
+**Configurando crontab**
+Como as ferramentas de rede já estão instaladas, basta apenas criar os arquivos de configuração.
+
+```bash
+cd /usr/local/bin/
+sudo touch monitoring.sh
+sudo chmod 777 monitoring.sh
+nano monitoring.sh
+```
+```bash
+#!/bin/bash
+arc=$(uname -a)
+pcpu=$(grep "physical id" /proc/cpuinfo | sort | uniq | wc -l) 
+vcpu=$(grep "^processor" /proc/cpuinfo | wc -l)
+fram=$(free -m | awk '$1 == "Mem:" {print $2}')
+uram=$(free -m | awk '$1 == "Mem:" {print $3}')
+pram=$(free | awk '$1 == "Mem:" {printf("%.2f"), $3/$2*100}')
+fdisk=$(df -BG | grep '^/dev/' | grep -v '/boot$' | awk '{ft += $2} END {print ft}')
+udisk=$(df -BM | grep '^/dev/' | grep -v '/boot$' | awk '{ut += $3} END {print ut}')
+pdisk=$(df -BM | grep '^/dev/' | grep -v '/boot$' | awk '{ut += $3} {ft+= $2} END {printf("%d"), ut/ft*100}')
+cpul=$(top -bn1 | grep '^%Cpu' | cut -c 9- | xargs | awk '{printf("%.1f%%"), $1 + $3}')
+lb=$(who -b | awk '$1 == "system" {print $3 " " $4}')
+lvmu=$(if [ $(lsblk | grep "lvm" | wc -l) -eq 0 ]; then echo no; else echo yes; fi)
+ctcp=$(ss -neopt state established | wc -l)
+ulog=$(users | wc -w)
+ip=$(hostname -I)
+mac=$(ip link show | grep "ether" | awk '{print $2}')
+cmds=$(journalctl _COMM=sudo | grep COMMAND | wc -l)
+wall "	#Architecture: $arc
+	#CPU physical: $pcpu
+	#vCPU: $vcpu
+	#Memory Usage: $uram/${fram}MB ($pram%)
+	#Disk Usage: $udisk/${fdisk}Gb ($pdisk%)
+	#CPU load: $cpul
+	#Last boot: $lb
+	#LVM use: $lvmu
+	#Connections TCP: $ctcp ESTABLISHED
+	#User log: $ulog
+	#Network: IP $ip ($mac)
+	#Sudo: $cmds cmd"
+```
+
+<aside>
+	<em>
+🤓 Você até pode abrir um terminal (na sua máquina host) via acesso SSH que já está funcionando e fazer o tradicional: Ctrl+c Ctrl+v
+Mas recomendo escrever e compreender cada comando \_(°-°)_/
+	</em>
+</aside>
+
+```bash
+**sudo visudo**
+#-- Procure a linha ‘# Allow members of group sudo to execute any command'
+#-- username ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh 
+#-- Ficará assim:
+**# Allow members of group sudo to execute any command
+%sudo   ALL=(ALL:ALL) ALL
+everton ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh**
+```
+
+```coq
+sudo reboot
+sudo /usr/local/bin/monitoring # Para executar o script como su (SuperUsuário)
+sudo crontab -u root -e # Para abrir o crontab
+*/10 * * * *        /usr/local/bin/monitoring.sh #(insira isso no final do arquivo)
+```
+*End Mandatory*
