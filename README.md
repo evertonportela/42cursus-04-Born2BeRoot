@@ -1,16 +1,14 @@
 # 42cursus-04-Born2BeRoot
 
 <p align="center">
-	<a href="#"><img src="https://game.42sp.org.br/static/assets/achievements/born2berootn.png"/></a>
+	<a href="#"><img src="https://game.42sp.org.br/static/assets/achievements/born2berootm.png"/></a>
 </p>
 
 <p align="center">
 	<a href="https://github.com/JaeSeoKim/badge42"><img src="https://badge42.vercel.app/api/v2/clgz3vp5u001608l5gzuhclek/project/3145425" alt="evportel's 42 Born2beroot Score" /></a>
 </p>
 
-<p align="center">
-	<strong>Part I - Instalação da VM</strong>
-</p>
+### Part I - Instalação da VM
 
 ```bash
 VM Machine
@@ -62,15 +60,14 @@ Yes -> /dev/sda (ata-VBOX...)
 Continue
 ```
 
-<p align="center">
-	<strong>Part II - Comandos e Configurações</strong>
-</p>
+### Part II - Comandos e Configurações
 
 Checando a estrutura de partições
 
 ```bash
 lsblk
 ```
+
 Com o Debian rodando… **Primeiramente instalar o sudo**
 
 ```bash
@@ -79,18 +76,21 @@ apt-get update -y
 apt-get upgrade -y
 apt install sudo
 usermod -aG sudo evportel
--- # getent group sudo para checar o grupo de usuário sudo
+-- # **getent group sudo** para checar o grupo de usuário sudo
 sudo visudo
 -- # Encontre -> # User privilege specification
--- # digite your_username  	ALL=(ALL:ALL) ALL e salve o arquivo
+-- # Adicione mais uma linha
+-- # your_username  	ALL=(ALL:ALL) ALL e salve o arquivo
 evportel  	ALL=(ALL) ALL
 ```
+
 **Retorne para seu usuário**
 
 ```bash
 su evportel
 cd /home/evportel
 ```
+
 **Install Aptitude, Git, SSH and Vim**
 
 ```bash
@@ -107,23 +107,30 @@ sudo vim /etc/ssh/sshd_config
 -- # Altere a linha para a porta 4242 sem o # (Hash) na frente dela
 -- Port 4242
 -- # salve e feche o arquivo: ESC -> :wq
-sudo grep Port /etc/ssh/sshd_config # Para verificar se as configurações da porta estão corretas
-sudo service ssh restart # Para reiniciar o serviço SSH
+-- # Para verificar se as configurações da porta estão corretas
+sudo grep Port /etc/ssh/sshd_config
+-- # Para reiniciar o serviço SSH
+sudo service ssh restart
 ```
+
 **Install UFW (Uncomplicated Firewall)**
 
 ```bash
 sudo apt-get install ufw -y
-sudo ufw enable # Para ativar o UFW
-sudo ufw status numbered # Para verificar o status do UFW
+-- # Para ativar o UFW
+sudo ufw enable
+-- # Para verificar o status do UFW
+sudo ufw status numbered
 sudo ufw allow ssh
 sudo ufw allow 4242
-sudo ufw status numbered # Para verificar o status do UFW, se a regra foi aplicada a porta 4242
+-- # Para verificar o status do UFW, se a regra foi aplicada a porta 4242
+sudo ufw status numbered
 ```
+
 **Conectando o SSH**
 
 No `**VirtualBox**`, clique na sua máquina virtual e selecione `**settings**`
-Clique em network, depois em Adapter 1, e altere para:  **`Attached to: Bridged Adapter`**
+Clique em network, depois em Adapter 1, e altere para: **`Attached to: Bridged Adapter`**
 E altere `**Promiscuous Mode**` para `**Allow All**`
 
 ![Screenshot 01](/screencshot/vm_01.jpg)
@@ -135,25 +142,34 @@ sudo systemctl restart ssh
 -- # Para reiniciar o serviço ssh
 sudo service sshd status
 ```
-**Install Net-Tools**
+
+**Install Net-Tools (opcional)** *(**Comando ip address é instalado por padrão no Debian12**)*
 
 ```bash
 sudo apt-get install net-tools
 
 -- # Reinicie a máquina virtual
 sudo reboot
--- # Pegue o IP da máquina virtual (inet 10.11.200.57) (netmask 255.255.0.0)
+-- # Pegue o IP da máquina virtual (inet 10.11.200.9) (netmask 255.255.0.0)
 ifconfig
 -- # e acesse user-name@ip-virtual-machine -p 4242
 ```
+
+```bash
+-- # Pegue o IP da máquina virtual (inet 10.11.200.9) (netmask 255.255.0.0)
+ip address
+-- # e acesse user-name@ip-virtual-machine -p 4242
+```
+
 **Na sua máquina host ou em uma máquina na mesma rede**
 
 ```bash
 -- # SSH user-name@ip-virtual-machine -p 4242
-ssh everton@10.11.200.57 -p 4242
+ssh everton@10.11.200.22 -p 4242
 -- # Para encerrar sua conexão SSH
 exit
 ```
+
 **Definindo política de senha**
 
 ```bash
@@ -162,6 +178,7 @@ sudo apt-get install libpam-pwquality -y
 -- # Editar algumas regras da política de senha
 sudo vim /etc/pam.d/common-password
 -- # Procure a linha **password requisite pam_pwquality.so retry=3**
+-- # ela também pode aparecer assim: **password		requisite		pam_deny.so**
 -- # E complete essa linha com: 
 -- # **minlen=10 ucredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root**
 -- # Salve e feche o Vim
@@ -173,6 +190,7 @@ sudo vim /etc/login.defs
 
 sudo reboot
 ```
+
 **Criando grupos de usuário**
 
 ```bash
@@ -181,6 +199,7 @@ sudo groupadd evaluation
 -- # Para verificar se os grupos foram criados
 getent group
 ```
+
 **Atribuindo usuários a grupos**
 
 ```bash
@@ -198,6 +217,7 @@ getent group user42
 getent group evaluation
 groups
 ```
+
 **Criando sudo.log**
 
 ```bash
@@ -207,6 +227,7 @@ sudo mkdir sudo
 cd sudo
 sudo touch sudo.log
 ```
+
 **Configurando o grupo sudoers**
 
 ```bash
@@ -221,8 +242,11 @@ Defaults	logfile="/var/log/sudo/sudo.log"
 Defaults	log_input, log_output
 Defaults	requiretty
 ```
+
 **Configurando crontab**
-Como as ferramentas de rede já estão instaladas, basta apenas criar os arquivos de configuração.
+Como as ferramentas de rede já estão instaladas, basta apenas criar os arquivos de configuração. Um detalhe importante é que o script monitoring.sh deve ser executado a cada 10min. Essa contagem se dá a partir da inicialização do sistema. 
+*Ex: Sistema Inicializado às 09:42:57
+As informações do monitoring.sh devem printar para os usuários às 09:52h, às 10:02 e assim sucessivamente.*
 
 ```bash
 cd /usr/local/bin/
@@ -230,6 +254,7 @@ sudo touch monitoring.sh
 sudo chmod 777 monitoring.sh
 nano monitoring.sh
 ```
+
 ```bash
 #!/bin/bash
 arc=$(uname -a)
@@ -263,21 +288,40 @@ wall "	#Architecture: $arc
 	#Sudo: $cmds cmd"
 ```
 
+```bash
+cd /usr/local/bin/
+sudo touch sleep.sh
+sudo chmod 777 sleep.sh
+nano sleep.sh
+```
+
+```bash
+#!/bin/bash
+BOOT_MINUTES=$(uptime -s | cut -d ":" -f 2)
+BOOT_SECONDS=$(uptime -s | cut -d ":" -f 3)
+
+DELAY=$(bc <<< $BOOT_MINUTES%10*60+$BOOT_SECONDS)
+
+sleep $DELAY
+
+/usr/local/bin/monitoring.sh
+```
+
 <aside>
-	<em>
-🤓 Você até pode abrir um terminal (na sua máquina host) via acesso SSH que já está funcionando e fazer o tradicional: Ctrl+c Ctrl+v
-Mas recomendo escrever e compreender cada comando \_(°-°)_/
-	</em>
+🤓 *Você até pode abrir um terminal (na sua máquina host) via acesso SSH que já está funcionando e fazer o tradicional: Ctrl+c Ctrl+v
+Mas recomendo escrever e compreender cada comando \_[°-°]_/*
+
 </aside>
 
 ```bash
-sudo visudo
-#-- Procure a linha ‘# Allow members of group sudo to execute any command'
-#-- username ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh 
-#-- Ficará assim:
-# Allow members of group sudo to execute any command
-%sudo   ALL=(ALL:ALL) ALL
-everton ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh
+**sudo visudo**
+-- # Procure a linha ‘# Allow members of group sudo to execute any command'
+-- # username ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh 
+-- # Ficará assim:
+**# Allow members of group sudo to execute any command
+%sudo    ALL=(ALL:ALL) ALL
+evportel ALL=(root) NOPASSWD: /usr/local/bin/monitoring.sh
+evportel ALL=(root) NOPASSWD: /usr/local/bin/sleep.sh**
 ```
 
 ```bash
@@ -287,11 +331,25 @@ sudo /usr/local/bin/monitoring
 -- # Para abrir o crontab
 sudo crontab -u root -e
 -- # (insira isso no final do arquivo)
-*/10 * * * *        /usr/local/bin/monitoring.sh
+*/10 * * * *        /usr/local/bin/sleep.sh
 ```
 
-**End Mandatory**
+A parte obrigatória é até aqui 🙂
+Gostou!? [Vai de bônus? ](https://www.notion.so/Vai-de-b-nus-b8dca9def41348e0b0d0aa4439d8c32d?pvs=21) 
 
-[**Vai de bônus? Clique aqui**](/Vai%20de%20b%C3%B4nus.md)
+Não? Então…
 
-**Submissão e Avaliação**
+**Gerar a assinatura final para o arquivo de entrega**
+
+```bash
+#-- Navegar até a pasta do Virtual box
+#-  Em /nfs/homes/evportel/VirtualBox VMs/**nome-da-maquina-virtual.vdi
+
+sha1sum nome-da-maquina-virtual.vdi**
+
+#-- isso pode levar alguns minutos
+#-- saída esperada:
+> c7629cfeca47b476c9a519218704d369b1a81b4d nome-da-maquina-virtual.vdi
+```
+
+Faça **snapshots** ou **clone** sua máquina virtual para as avaliações. Qualquer boot realizado na máquina virtual original, altera o **hash de assinatura.** Então em hipótese alguma, inicialize *diretamente* sua máquina virtual, após fechar o repositório do projeto na intra.
